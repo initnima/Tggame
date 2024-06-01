@@ -33,8 +33,8 @@ class Player {
       //  }, 300000); // 5 minutes
 
          For testing, you can use a shorter interval like 5 seconds (5000 ms)
-        /setInterval(() => {
-        /    this.earnCoins();
+        setInterval(() => {
+            this.earnCoins();
          }, 5000); // 5 seconds
     }
 
