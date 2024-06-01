@@ -35,15 +35,10 @@ class Player {
         this.earnRate = 0.1;
         this.upgradeCost = 0.4;
 
-        // Start earning coins
         setInterval(() => {
             this.earnCoins();
-        }, 300000); // 5 minutes
+        }, 300000); 
 
-        // For testing, you can use a shorter interval like 5 seconds (5000 ms)
-        // setInterval(() => {
-        //     this.earnCoins();
-        // }, 5000); // 5 seconds
     }
 
     earnCoins() {
