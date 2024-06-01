@@ -1,7 +1,7 @@
 // Initialize Three.js scene
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -49,8 +49,6 @@ class Player {
             this.coins -= this.upgradeCost;
             this.levelUp();
             updateUI();
-        } else {
-            console.log('Not enough coins for upgrade or invalid parameter.');
         }
     }
 
@@ -75,7 +73,7 @@ class Player {
             0x7700ff, 0x77ff00, 0x0077ff, 0x00ff77,
             0xff0077, 0xff7700
         ];
-        planetMaterial.color.setHex(colors[(this.level - 1) % colors.length]);
+        planetMaterial.color.setHex(colors[this.level - 1]);
     }
 }
 
@@ -104,11 +102,6 @@ function animate() {
     planet.rotation.y += 0.01;
     renderer.render(scene, camera);
 }
-
-// Error handling for renderer
-renderer.domElement.addEventListener('error', (event) => {
-    console.error('Error occurred in rendering:', event);
-});
 
 animate();
 
