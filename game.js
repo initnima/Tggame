@@ -1,7 +1,7 @@
 // Initialize Three.js scene
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -12,7 +12,15 @@ let planetMaterial = new THREE.MeshBasicMaterial({ color: 0x0077ff });
 const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 scene.add(planet);
 
-camera.position.z = 10;
+// Create a background
+const loader = new THREE.TextureLoader();
+loader.load('https://threejs.org/examples/textures/space.jpg', function(texture) {
+    scene.background = texture;
+}, undefined, function(err) {
+    console.error('An error occurred while loading the background:', err);
+});
+
+camera.position.z = 15;
 
 // Player class
 class Player {
@@ -73,7 +81,7 @@ class Player {
             0x7700ff, 0x77ff00, 0x0077ff, 0x00ff77,
             0xff0077, 0xff7700
         ];
-        planetMaterial.color.setHex(colors[this.level - 1]);
+        planetMaterial.color.setHex(colors[(this.level - 1) % colors.length]);
     }
 }
 
