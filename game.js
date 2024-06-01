@@ -37,7 +37,7 @@ class Player {
 
         setInterval(() => {
             this.earnCoins();
-        }, 300000); 
+        }, 5000); 
 
     }
 
