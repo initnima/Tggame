@@ -28,9 +28,14 @@ class Player {
         this.upgradeCost = 0.4;
 
         // Start earning coins
-        setInterval(() => {
-            this.earnCoins();
-        }, 60000); // 5 minutes
+       // setInterval(() => {
+       //     this.earnCoins();
+      //  }, 300000); // 5 minutes
+
+         For testing, you can use a shorter interval like 5 seconds (5000 ms)
+        /setInterval(() => {
+        /    this.earnCoins();
+         }, 5000); // 5 seconds
     }
 
     earnCoins() {
@@ -43,6 +48,16 @@ class Player {
             this[parameter]++;
             this.coins -= this.upgradeCost;
             this.levelUp();
+            updateUI();
+        }
+    }
+
+    upgradeToLevel(targetLevel) {
+        if (targetLevel > this.level && this.coins >= this.upgradeCost * Math.pow(2, targetLevel - this.level - 1)) {
+            while (this.level < targetLevel) {
+                this.coins -= this.upgradeCost;
+                this.levelUp();
+            }
             updateUI();
         }
     }
@@ -60,7 +75,7 @@ class Player {
             0x7700ff, 0x77ff00, 0x0077ff, 0x00ff77,
             0xff0077, 0xff7700
         ];
-        planetMaterial.color.setHex(colors[this.level - 1]);
+        planetMaterial.color.setHex(colors[(this.level - 1) % colors.length]);
     }
 }
 
@@ -95,5 +110,10 @@ animate();
 // Attach upgrade function to window for button access
 window.upgrade = function(parameter) {
     player.upgrade(parameter);
+    updateUI();
+}
+
+window.upgradeToLevel = function(level) {
+    player.upgradeToLevel(level);
     updateUI();
 }
