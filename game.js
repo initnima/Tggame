@@ -1,7 +1,7 @@
 // Initialize Three.js scene
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -28,14 +28,14 @@ class Player {
         this.upgradeCost = 0.4;
 
         // Start earning coins
-       // setInterval(() => {
-       //     this.earnCoins();
-      //  }, 300000); // 5 minutes
-
-         For testing, you can use a shorter interval like 5 seconds (5000 ms)
         setInterval(() => {
             this.earnCoins();
-         }, 5000); // 5 seconds
+        }, 300000); // 5 minutes
+
+        // For testing, you can use a shorter interval like 5 seconds (5000 ms)
+        // setInterval(() => {
+        //     this.earnCoins();
+        // }, 5000); // 5 seconds
     }
 
     earnCoins() {
@@ -49,17 +49,17 @@ class Player {
             this.coins -= this.upgradeCost;
             this.levelUp();
             updateUI();
+        } else {
+            console.log('Not enough coins for upgrade or invalid parameter.');
         }
     }
 
     upgradeToLevel(targetLevel) {
-        if (targetLevel > this.level && this.coins >= this.upgradeCost * Math.pow(2, targetLevel - this.level - 1)) {
-            while (this.level < targetLevel) {
-                this.coins -= this.upgradeCost;
-                this.levelUp();
-            }
-            updateUI();
+        while (this.level < targetLevel && this.coins >= this.upgradeCost) {
+            this.coins -= this.upgradeCost;
+            this.levelUp();
         }
+        updateUI();
     }
 
     levelUp() {
@@ -104,6 +104,11 @@ function animate() {
     planet.rotation.y += 0.01;
     renderer.render(scene, camera);
 }
+
+// Error handling for renderer
+renderer.domElement.addEventListener('error', (event) => {
+    console.error('Error occurred in rendering:', event);
+});
 
 animate();
 
