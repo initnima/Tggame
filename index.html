@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Planet Game</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        canvas { display: block; }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+        }
+        .parameter {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div class="parameter">Energy Maker: <span id="energy">0</span></div>
+        <div class="parameter">Colony: <span id="colony">0</span></div>
+        <div class="parameter">Communication: <span id="communication">0</span></div>
+        <div class="parameter">Water: <span id="water">0</span></div>
+        <div class="parameter">Food: <span id="food">0</span></div>
+        <button onclick="upgrade('energy')">Upgrade Energy</button>
+        <button onclick="upgrade('colony')">Upgrade Colony</button>
+        <button onclick="upgrade('communication')">Upgrade Communication</button>
+        <button onclick="upgrade('water')">Upgrade Water</button>
+        <button onclick="upgrade('food')">Upgrade Food</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
