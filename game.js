@@ -42,7 +42,7 @@ class Player {
         // Start earning coins
         setInterval(() => {
             this.earnCoins();
-        }, 300000); // 5 minutes
+        }, 5000); // 5 minutes
 
         // For testing, you can use a shorter interval like 5 seconds (5000 ms)
         // setInterval(() => {
