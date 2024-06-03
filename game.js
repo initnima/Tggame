@@ -6,15 +6,19 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Create a 3D planet
+// Create a 3D planet with texture
 const planetGeometry = new THREE.SphereGeometry(5, 32, 32);
-let planetMaterial = new THREE.MeshBasicMaterial({ color: 0x0077ff });
+let planetMaterial = new THREE.MeshBasicMaterial();
+const textureLoader = new THREE.TextureLoader();
+textureLoader.load('https://threejs.org/examples/textures/earth.jpg', (texture) => {
+    planetMaterial.map = texture;
+    planetMaterial.needsUpdate = true;
+});
 const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 scene.add(planet);
 
 // Create a background
-const loader = new THREE.TextureLoader();
-loader.load('https://threejs.org/examples/textures/space.jpg', function(texture) {
+textureLoader.load('https://threejs.org/examples/textures/space.jpg', function(texture) {
     scene.background = texture;
 }, undefined, function(err) {
     console.error('An error occurred while loading the background:', err);
@@ -35,10 +39,15 @@ class Player {
         this.earnRate = 0.1;
         this.upgradeCost = 0.4;
 
+        // Start earning coins
         setInterval(() => {
             this.earnCoins();
-        }, 5000); 
+        }, 300000); // 5 minutes
 
+        // For testing, you can use a shorter interval like 5 seconds (5000 ms)
+        // setInterval(() => {
+        //     this.earnCoins();
+        // }, 5000); // 5 seconds
     }
 
     earnCoins() {
@@ -53,14 +62,6 @@ class Player {
             this.levelUp();
             updateUI();
         }
-    }
-
-    upgradeToLevel(targetLevel) {
-        while (this.level < targetLevel && this.coins >= this.upgradeCost) {
-            this.coins -= this.upgradeCost;
-            this.levelUp();
-        }
-        updateUI();
     }
 
     levelUp() {
@@ -111,10 +112,5 @@ animate();
 // Attach upgrade function to window for button access
 window.upgrade = function(parameter) {
     player.upgrade(parameter);
-    updateUI();
-}
-
-window.upgradeToLevel = function(level) {
-    player.upgradeToLevel(level);
     updateUI();
 }
