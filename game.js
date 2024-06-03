@@ -18,7 +18,7 @@ const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 scene.add(planet);
 
 // Create a background
-textureLoader.load('https://threejs.org/examples/textures/space.jpg', function(texture) {
+textureLoader.load('https://initnima.github.io/Tggame/a-breathtaking-3d-rendering-of-a-vast-cosmic-space-60WSRgwFSJi-TKSGmyTlaA-sSim8EyqRYaUT5xcrEfCmQ-enhanced.png', function(texture) {
     scene.background = texture;
 }, undefined, function(err) {
     console.error('An error occurred while loading the background:', err);
