@@ -8,12 +8,16 @@ document.body.appendChild(renderer.domElement);
 
 // Create a 3D planet with texture
 const planetGeometry = new THREE.SphereGeometry(5, 32, 32);
-let planetMaterial = new THREE.MeshBasicMaterial();
+let planetMaterial = new THREE.MeshPhongMaterial();
 const textureLoader = new THREE.TextureLoader();
-textureLoader.load('https://threejs.org/examples/textures/earth.jpg', (texture) => {
-    planetMaterial.map = texture;
-    planetMaterial.needsUpdate = true;
-});
+const updatePlanetTexture = (level) => {
+    const textureUrl = `https://initnima.github.io/Tggame/planet_texture_level_${level}.jpg`; // Change this URL accordingly
+    textureLoader.load(textureUrl, (texture) => {
+        planetMaterial.map = texture;
+        planetMaterial.needsUpdate = true;
+    });
+};
+updatePlanetTexture(1); // Initial texture
 const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 scene.add(planet);
 
@@ -25,6 +29,11 @@ textureLoader.load('https://initnima.github.io/Tggame/a-breathtaking-3d-renderin
 });
 
 camera.position.z = 15;
+
+// Lighting
+const light = new THREE.PointLight(0xffffff, 1, 100);
+light.position.set(10, 10, 10);
+scene.add(light);
 
 class Player {
     constructor() {
@@ -82,7 +91,16 @@ class Player {
             localStorage.setItem(parameter, this[parameter]);
             localStorage.setItem('upgradeCost' + parameter.charAt(0).toUpperCase() + parameter.slice(1), this.upgradeCosts[parameter]);
             this.updateUI();
+            this.levelUp();
         }
+    }
+
+    levelUp() {
+        this.level++;
+        this.earnRate += 0.1;
+        localStorage.setItem('level', this.level);
+        this.changePlanetColor();
+        updatePlanetTexture(this.level); // Update texture with each level
     }
 
     changePlanetColor() {
