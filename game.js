@@ -70,6 +70,7 @@ const light = new THREE.PointLight(0xffffff, 1, 100);
 light.position.set(10, 10, 10);
 scene.add(light);
 
+// Player class
 class Player {
     constructor() {
         this.energy = parseInt(localStorage.getItem('energy')) || 0;
