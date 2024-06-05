@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Planet Game</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; overflow: hidden; background: black; color: white; }
+        body { margin: 0; font-family: Arial, sans-serif; overflow: hidden; }
         canvas { display: block; }
         #ui {
             position: absolute;
             top: 10px;
             left: 10px;
+            color: white;
             background: rgba(0, 0, 0, 0.5);
             padding: 10px;
             border-radius: 5px;
@@ -18,15 +19,8 @@
         .parameter {
             margin-bottom: 10px;
         }
-        select, button {
+        button {
             margin-bottom: 5px;
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            background: #333;
-            color: white;
-            border: 1px solid #444;
-            border-radius: 5px;
         }
     </style>
 </head>
@@ -40,14 +34,15 @@
         <div class="parameter">Coins: <span id="coins">0.0</span></div>
         <div class="parameter">Level: <span id="level">1</span></div>
         <div class="parameter">Earn Rate: <span id="earnRate">0.1</span>/5 min</div>
+        <div class="parameter">Upgrade Cost: <span id="upgradeCost">0.4</span> coins</div>
         <select id="upgradeSelect">
-            <option value="energy">Upgrade Energy</option>
-            <option value="colony">Upgrade Colony</option>
-            <option value="communication">Upgrade Communication</option>
-            <option value="water">Upgrade Water</option>
-            <option value="food">Upgrade Food</option>
+            <option value="energy">Energy</option>
+            <option value="colony">Colony</option>
+            <option value="communication">Communication</option>
+            <option value="water">Water</option>
+            <option value="food">Food</option>
         </select>
-        <button id="upgradeButton">Upgrade</button>
+        <button onclick="upgrade()">Upgrade</button>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="game.js"></script>
