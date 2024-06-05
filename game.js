@@ -124,4 +124,63 @@ class Player {
             this.upgradeCosts[parameter] *= 2;
             localStorage.setItem('coins', this.coins);
             localStorage.setItem(parameter, this[parameter]);
-            localStorage.setItem('upgra
+            localStorage.setItem('upgradeCost' + parameter.charAt(0).toUpperCase() + parameter.slice(1), this.upgradeCosts[parameter]);
+            this.updateUI();
+            this.levelUp();
+        }
+    }
+
+    levelUp() {
+        this.level++;
+        this.earnRate += 0.1;
+        localStorage.setItem('level', this.level);
+        this.updatePlanetTexture();
+        this.updateUI();
+    }
+
+    updatePlanetTexture() {
+        planetMaterial.map = generateTexture();
+        planetMaterial.needsUpdate = true;
+    }
+
+    updateUI() {
+        document.getElementById('energy').innerText = this.energy;
+        document.getElementById('colony').innerText = this.colony;
+        document.getElementById('communication').innerText = this.communication;
+        document.getElementById('water').innerText = this.water;
+        document.getElementById('food').innerText = this.food;
+        document.getElementById('coins').innerText = this.coins.toFixed(1);
+        document.getElementById('level').innerText = this.level;
+        document.getElementById('earnRate').innerText = this.earnRate.toFixed(1);
+        updateUpgradeCostText();
+    }
+}
+
+const player = new Player();
+
+function updateUpgradeCostText() {
+    const parameter = document.getElementById('upgradeSelect').value;
+    document.getElementById('upgradeCost').innerText = player.upgradeCosts[parameter].toFixed(1);
+}
+
+// Initial UI update
+updateUpgradeCostText();
+
+// Animation loop
+function animate() {
+    requestAnimationFrame(animate);
+    planet.rotation.y += 0.01;
+    renderer.render(scene, camera);
+}
+
+animate();
+
+document.getElementById('toggleMenu').addEventListener('click', () => {
+    document.getElementById('ui').classList.toggle('open');
+});
+
+// Attach upgrade function to window for button access
+window.upgrade = function() {
+    const parameter = document.getElementById('upgradeSelect').value;
+    player.upgrade(parameter);
+}
