@@ -6,27 +6,62 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Create a 3D planet with texture
+// Create a 3D planet with a generated texture
 const planetGeometry = new THREE.SphereGeometry(5, 32, 32);
 let planetMaterial = new THREE.MeshPhongMaterial();
-const textureLoader = new THREE.TextureLoader();
-const updatePlanetTexture = (level) => {
-    const textureUrl = `https://initnima.github.io/Tggame/planet_texture_level_${level}.jpg`; // Change this URL accordingly
-    textureLoader.load(textureUrl, (texture) => {
-        planetMaterial.map = texture;
-        planetMaterial.needsUpdate = true;
-    });
+const generateTexture = () => {
+    const size = 256;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext('2d');
+    
+    const imageData = context.createImageData(size, size);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        const value = Math.floor(Math.random() * 255);
+        data[i] = value;
+        data[i + 1] = value;
+        data[i + 2] = value;
+        data[i + 3] = 255;
+    }
+
+    context.putImageData(imageData, 0, 0);
+
+    return new THREE.CanvasTexture(canvas);
 };
-updatePlanetTexture(1); // Initial texture
+
+planetMaterial.map = generateTexture();
+planetMaterial.needsUpdate = true;
 const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 scene.add(planet);
 
-// Create a background
-textureLoader.load('https://initnima.github.io/Tggame/a-breathtaking-3d-rendering-of-a-vast-cosmic-space-60WSRgwFSJi-TKSGmyTlaA-sSim8EyqRYaUT5xcrEfCmQ-enhanced.png', function(texture) {
-    scene.background = texture;
-}, undefined, function(err) {
-    console.error('An error occurred while loading the background:', err);
-});
+// Generate background texture
+const generateBackgroundTexture = () => {
+    const size = 512;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext('2d');
+    
+    const imageData = context.createImageData(size, size);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        const value = Math.floor(Math.random() * 255);
+        data[i] = value / 2;
+        data[i + 1] = value / 2;
+        data[i + 2] = value;
+        data[i + 3] = 255;
+    }
+
+    context.putImageData(imageData, 0, 0);
+
+    return new THREE.CanvasTexture(canvas);
+};
+
+scene.background = generateBackgroundTexture();
 
 camera.position.z = 15;
 
@@ -99,17 +134,13 @@ class Player {
         this.level++;
         this.earnRate += 0.1;
         localStorage.setItem('level', this.level);
-        this.changePlanetColor();
-        updatePlanetTexture(this.level); // Update texture with each level
+        this.updatePlanetTexture();
+        this.updateUI();
     }
 
-    changePlanetColor() {
-        const colors = [
-            0x0077ff, 0x00ff77, 0xff0077, 0xff7700,
-            0x7700ff, 0x77ff00, 0x0077ff, 0x00ff77,
-            0xff0077, 0xff7700
-        ];
-        planetMaterial.color.setHex(colors[(this.level - 1) % colors.length]);
+    updatePlanetTexture() {
+        planetMaterial.map = generateTexture();
+        planetMaterial.needsUpdate = true;
     }
 
     updateUI() {
@@ -121,12 +152,19 @@ class Player {
         document.getElementById('coins').innerText = this.coins.toFixed(1);
         document.getElementById('level').innerText = this.level;
         document.getElementById('earnRate').innerText = this.earnRate.toFixed(1);
-        document.getElementById('upgradeCost').innerText = Math.min(...Object.values(this.upgradeCosts)).toFixed(1);
+        updateUpgradeCostText();
     }
 }
 
-// Initialize player
 const player = new Player();
+
+function updateUpgradeCostText() {
+    const parameter = document.getElementById('upgradeSelect').value;
+    document.getElementById('upgradeCost').innerText = player.upgradeCosts[parameter].toFixed(1);
+}
+
+// Initial UI update
+updateUpgradeCostText();
 
 // Animation loop
 function animate() {
@@ -136,6 +174,10 @@ function animate() {
 }
 
 animate();
+
+document.getElementById('toggleMenu').addEventListener('click', () => {
+    document.getElementById('ui').classList.toggle('open');
+});
 
 // Attach upgrade function to window for button access
 window.upgrade = function() {
