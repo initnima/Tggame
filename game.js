@@ -26,20 +26,6 @@ textureLoader.load('https://initnima.github.io/Tggame/a-breathtaking-3d-renderin
 
 camera.position.z = 15;
 
-// Update UI function
-function updateUI() {
-    document.getElementById('energy').innerText = player.energy;
-    document.getElementById('colony').innerText = player.colony;
-    document.getElementById('communication').innerText = player.communication;
-    document.getElementById('water').innerText = player.water;
-    document.getElementById('food').innerText = player.food;
-    document.getElementById('coins').innerText = player.coins.toFixed(1);
-    document.getElementById('level').innerText = player.level;
-    document.getElementById('earnRate').innerText = player.earnRate.toFixed(1);
-    document.getElementById('upgradeCost').innerText = player.upgradeCosts.energy.toFixed(1); // Just an example
-}
-
-// Player class
 class Player {
     constructor() {
         this.energy = parseInt(localStorage.getItem('energy')) || 0;
@@ -66,6 +52,8 @@ class Player {
         setInterval(() => {
             this.earnCoins();
         }, 1000); // 5 minutes
+
+        this.updateUI();
     }
 
     calculateOfflineEarnings() {
@@ -75,13 +63,13 @@ class Player {
         this.coins += offlineEarnings;
         this.lastLoginTime = now;
         localStorage.setItem('lastLoginTime', now);
-        updateUI();
+        this.updateUI();
     }
 
     earnCoins() {
         this.coins += this.earnRate;
         localStorage.setItem('coins', this.coins);
-        updateUI();
+        this.updateUI();
     }
 
     upgrade(parameter) {
@@ -93,7 +81,7 @@ class Player {
             localStorage.setItem('coins', this.coins);
             localStorage.setItem(parameter, this[parameter]);
             localStorage.setItem('upgradeCost' + parameter.charAt(0).toUpperCase() + parameter.slice(1), this.upgradeCosts[parameter]);
-            updateUI();
+            this.updateUI();
         }
     }
 
@@ -105,13 +93,22 @@ class Player {
         ];
         planetMaterial.color.setHex(colors[(this.level - 1) % colors.length]);
     }
+
+    updateUI() {
+        document.getElementById('energy').innerText = this.energy;
+        document.getElementById('colony').innerText = this.colony;
+        document.getElementById('communication').innerText = this.communication;
+        document.getElementById('water').innerText = this.water;
+        document.getElementById('food').innerText = this.food;
+        document.getElementById('coins').innerText = this.coins.toFixed(1);
+        document.getElementById('level').innerText = this.level;
+        document.getElementById('earnRate').innerText = this.earnRate.toFixed(1);
+        document.getElementById('upgradeCost').innerText = Math.min(...Object.values(this.upgradeCosts)).toFixed(1);
+    }
 }
 
 // Initialize player
 const player = new Player();
-
-// Initial UI update
-updateUI();
 
 // Animation loop
 function animate() {
@@ -126,5 +123,4 @@ animate();
 window.upgrade = function() {
     const parameter = document.getElementById('upgradeSelect').value;
     player.upgrade(parameter);
-    updateUI();
 }
