@@ -5,22 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Planet Game</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; overflow: hidden; }
+        body { margin: 0; font-family: Arial, sans-serif; overflow: hidden; background-color: #121212; color: #ffffff; }
         canvas { display: block; }
         #ui {
             position: absolute;
             top: 10px;
             left: 10px;
-            color: white;
-            background: rgba(0, 0, 0, 0.5);
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
         .parameter {
             margin-bottom: 10px;
         }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        select {
+            background-color: #282828;
+            color: #ffffff;
+        }
         button {
-            margin-bottom: 5px;
+            background-color: #007bff;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #555555;
         }
     </style>
 </head>
