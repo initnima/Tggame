@@ -134,11 +134,10 @@ class Player {
         this.level++;
         this.earnRate += 0.1;
         localStorage.setItem('level', this.level);
-        this.updatePlanetTexture();
-        this.updateUI();
+        this.changePlanetTexture();
     }
 
-    updatePlanetTexture() {
+    changePlanetTexture() {
         planetMaterial.map = generateTexture();
         planetMaterial.needsUpdate = true;
     }
