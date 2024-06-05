@@ -163,9 +163,6 @@ function updateUpgradeCostText() {
     document.getElementById('upgradeCost').innerText = player.upgradeCosts[parameter].toFixed(1);
 }
 
-// Initial UI update
-updateUpgradeCostText();
-
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
@@ -183,4 +180,4 @@ document.getElementById('toggleMenu').addEventListener('click', () => {
 window.upgrade = function() {
     const parameter = document.getElementById('upgradeSelect').value;
     player.upgrade(parameter);
-}
+};
