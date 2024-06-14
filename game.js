@@ -13,8 +13,8 @@ document.body.appendChild(renderer.domElement);
 
 // Load textures
 const loader = new THREE.TextureLoader();
-const planetTexture = loader.load('https://initnima.github.io/Tggame/texture%20(3).jpg');
-const backgroundTexture = loader.load('https://initnima.github.io/Tggame/bg-02-01.jpg');
+const planetTexture = loader.load('planet.jpg');
+const backgroundTexture = loader.load('background.jpg');
 
 // Create a 3D planet with the image-based texture
 const planetGeometry = new THREE.SphereGeometry(5, 32, 32);
@@ -35,22 +35,22 @@ scene.add(light);
 // Player class
 class Player {
     constructor() {
-        this.energy = parseInt(tg.initDataUnsafe.user.custom_data?.energy) || 0;
-        this.colony = parseInt(tg.initDataUnsafe.user.custom_data?.colony) || 0;
-        this.communication = parseInt(tg.initDataUnsafe.user.custom_data?.communication) || 0;
-        this.water = parseInt(tg.initDataUnsafe.user.custom_data?.water) || 0;
-        this.food = parseInt(tg.initDataUnsafe.user.custom_data?.food) || 0;
-        this.coins = parseFloat(tg.initDataUnsafe.user.custom_data?.coins) || 0;
-        this.level = parseInt(tg.initDataUnsafe.user.custom_data?.level) || 1;
+        this.energy = parseInt(localStorage.getItem('energy')) || 0;
+        this.colony = parseInt(localStorage.getItem('colony')) || 0;
+        this.communication = parseInt(localStorage.getItem('communication')) || 0;
+        this.water = parseInt(localStorage.getItem('water')) || 0;
+        this.food = parseInt(localStorage.getItem('food')) || 0;
+        this.coins = parseFloat(localStorage.getItem('coins')) || 0;
+        this.level = parseInt(localStorage.getItem('level')) || 1;
         this.earnRate = 0.1;
         this.upgradeCosts = {
-            energy: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostEnergy) || 0.4,
-            colony: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostColony) || 0.4,
-            communication: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostCommunication) || 0.4,
-            water: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostWater) || 0.4,
-            food: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostFood) || 0.4
+            energy: parseFloat(localStorage.getItem('upgradeCostEnergy')) || 0.4,
+            colony: parseFloat(localStorage.getItem('upgradeCostColony')) || 0.4,
+            communication: parseFloat(localStorage.getItem('upgradeCostCommunication')) || 0.4,
+            water: parseFloat(localStorage.getItem('upgradeCostWater')) || 0.4,
+            food: parseFloat(localStorage.getItem('upgradeCostFood')) || 0.4
         };
-        this.lastLoginTime = parseInt(tg.initDataUnsafe.user.custom_data?.lastLoginTime) || Date.now();
+        this.lastLoginTime = parseInt(localStorage.getItem('lastLoginTime')) || Date.now();
 
         // Calculate offline earnings
         this.calculateOfflineEarnings();
@@ -58,7 +58,7 @@ class Player {
         // Start earning coins
         setInterval(() => {
             this.earnCoins();
-        }, 300000); // 5 minutes in milliseconds
+        }, 1000); // 1 second
 
         this.updateUI();
     }
@@ -69,13 +69,13 @@ class Player {
         const offlineEarnings = timeElapsed * this.earnRate;
         this.coins += offlineEarnings;
         this.lastLoginTime = now;
-        tg.MainButton.setText('Last login time: ' + now);
+        localStorage.setItem('lastLoginTime', now);
         this.updateUI();
     }
 
     earnCoins() {
         this.coins += this.earnRate;
-        tg.MainButton.setText('Coins: ' + this.coins);
+        localStorage.setItem('coins', this.coins);
         this.updateUI();
     }
 
@@ -85,7 +85,9 @@ class Player {
             this[parameter]++;
             this.coins -= cost;
             this.upgradeCosts[parameter] *= 2;
-            tg.MainButton.setText('Coins: ' + this.coins);
+            localStorage.setItem('coins', this.coins);
+            localStorage.setItem(parameter, this[parameter]);
+            localStorage.setItem('upgradeCost' + parameter.charAt(0).toUpperCase() + parameter.slice(1), this.upgradeCosts[parameter]);
             this.updateUI();
             this.levelUp();
         }
@@ -94,11 +96,12 @@ class Player {
     levelUp() {
         this.level++;
         this.earnRate += 0.1;
+        localStorage.setItem('level', this.level);
         this.changePlanetTexture();
     }
 
     changePlanetTexture() {
-        planetMaterial.map = loader.load('https://initnima.github.io/Tggame/texture%20(3).jpg'); // Reload the planet texture
+        planetMaterial.map = loader.load('planet.jpg'); // Reload the planet texture
         planetMaterial.needsUpdate = true;
     }
 
@@ -111,16 +114,16 @@ class Player {
         document.getElementById('coins').innerText = this.coins.toFixed(1);
         document.getElementById('level').innerText = this.level;
         document.getElementById('earnRate').innerText = this.earnRate.toFixed(1);
-        this.updateUpgradeCostText();
-    }
-
-    updateUpgradeCostText() {
-        const parameter = document.getElementById('upgradeSelect').value;
-        document.getElementById('upgradeCost').innerText = this.upgradeCosts[parameter].toFixed(1);
+        updateUpgradeCostText();
     }
 }
 
 const player = new Player();
+
+function updateUpgradeCostText() {
+    const parameter = document.getElementById('upgradeSelect').value;
+    document.getElementById('upgradeCost').innerText = player.upgradeCosts[parameter].toFixed(1);
+}
 
 // Animation loop
 function animate() {
