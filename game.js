@@ -51,6 +51,8 @@ class Player {
             food: parseFloat(localStorage.getItem('upgradeCostFood')) || 0.4
         };
         this.lastLoginTime = parseInt(localStorage.getItem('lastLoginTime')) || Date.now();
+        this.isMining = JSON.parse(localStorage.getItem('isMining')) || false;
+        this.miningEndTime = parseInt(localStorage.getItem('miningEndTime')) || 0;
 
         // Calculate offline earnings
         this.calculateOfflineEarnings();
@@ -59,6 +61,9 @@ class Player {
         setInterval(() => {
             this.earnCoins();
         }, 1000); // 1 second
+
+        // Check mining status
+        this.checkMiningStatus();
 
         this.updateUI();
     }
@@ -116,6 +121,25 @@ class Player {
         document.getElementById('earnRate').innerText = this.earnRate.toFixed(1);
         updateUpgradeCostText();
     }
+
+    startMining() {
+        this.isMining = true;
+        this.miningEndTime = Date.now() + 2 * 60 * 60 * 1000; // 2 hours in ms
+        localStorage.setItem('isMining', JSON.stringify(this.isMining));
+        localStorage.setItem('miningEndTime', this.miningEndTime);
+        this.checkMiningStatus();
+    }
+
+    checkMiningStatus() {
+        const now = Date.now();
+        if (this.isMining && now >= this.miningEndTime) {
+            this.isMining = false;
+            localStorage.setItem('isMining', JSON.stringify(this.isMining));
+            this.coins += 100; // Reward for mining
+            localStorage.setItem('coins', this.coins);
+        }
+        this.updateUI();
+    }
 }
 
 const player = new Player();
@@ -136,6 +160,10 @@ animate();
 
 document.getElementById('toggleMenu').addEventListener('click', () => {
     document.getElementById('ui').classList.toggle('open');
+});
+
+document.getElementById('startMining').addEventListener('click', () => {
+    player.startMining();
 });
 
 // Attach upgrade function to window for button access
