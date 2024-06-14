@@ -3,85 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Planet Game</title>
+    <title>Telegram Mini Game</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; overflow: hidden; background-color: #121212; color: #ffffff; }
-        canvas { display: block; }
-        #ui {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 10px 10px 0 0;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-        }
-        #ui.open {
-            transform: translateY(0);
-        }
-        .parameter {
-            margin-bottom: 10px;
-        }
-        select, button {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        select {
-            background-color: #282828;
-            color: #ffffff;
-        }
-        button {
-            background-color: #007bff;
-            color: #ffffff;
-            cursor: pointer;
-        }
-        button:disabled {
-            background-color: #555555;
-        }
-        #toggleMenu {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50px;
-            height: 30px;
-            background: #007bff;
-            border-radius: 10px 10px 0 0;
-            text-align: center;
-            color: white;
-            cursor: pointer;
-        }
+        body, html { margin: 0; padding: 0; overflow: hidden; }
+        #ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background-color: rgba(0, 0, 0, 0.8); color: white; }
+        #ui.open { display: block; }
+        #toggleMenu { position: absolute; top: 10px; right: 10px; z-index: 100; }
     </style>
 </head>
 <body>
+    <button id="toggleMenu">Menu</button>
     <div id="ui">
-        <div id="toggleMenu">▲</div>
-        <div class="parameter">Energy Maker: <span id="energy">0</span></div>
-        <div class="parameter">Colony: <span id="colony">0</span></div>
-        <div class="parameter">Communication: <span id="communication">0</span></div>
-        <div class="parameter">Water: <span id="water">0</span></div>
-        <div class="parameter">Food: <span id="food">0</span></div>
-        <div class="parameter">Coins: <span id="coins">0.0</span></div>
-        <div class="parameter">Level: <span id="level">1</span></div>
-        <div class="parameter">Earn Rate: <span id="earnRate">0.1</span>/5 min</div>
-        <div class="parameter">Upgrade Cost: <span id="upgradeCost">0.4</span> coins</div>
-        <select id="upgradeSelect" onchange="updateUpgradeCostText()">
+        <h1>Player Stats</h1>
+        <div>Energy: <span id="energy"></span></div>
+        <div>Colony: <span id="colony"></span></div>
+        <div>Communication: <span id="communication"></span></div>
+        <div>Water: <span id="water"></span></div>
+        <div>Food: <span id="food"></span></div>
+        <div>Coins: <span id="coins"></span></div>
+        <div>Level: <span id="level"></span></div>
+        <div>Earn Rate: <span id="earnRate"></span></div>
+        <select id="upgradeSelect">
             <option value="energy">Energy</option>
             <option value="colony">Colony</option>
             <option value="communication">Communication</option>
             <option value="water">Water</option>
             <option value="food">Food</option>
         </select>
-        <button onclick="upgrade()">Upgrade</button>
+        <div>Upgrade Cost: <span id="upgradeCost"></span></div>
+        <button onclick="window.upgrade()">Upgrade</button>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/build/three.min.js"></script>
     <script src="game.js"></script>
 </body>
 </html>
