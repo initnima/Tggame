@@ -1,3 +1,8 @@
+// Initialize Telegram Web Apps SDK
+Telegram.WebApp.ready();
+
+const tg = window.Telegram.WebApp;
+
 // Initialize Three.js scene
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -6,62 +11,19 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Create a 3D planet with a generated texture
+// Load textures
+const loader = new THREE.TextureLoader();
+const planetTexture = loader.load('texture%20(3).jpg');
+const backgroundTexture = loader.load('bg-02-01.jpg');
+
+// Create a 3D planet with the image-based texture
 const planetGeometry = new THREE.SphereGeometry(5, 32, 32);
-let planetMaterial = new THREE.MeshPhongMaterial();
-const generateTexture = () => {
-    const size = 256;
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const context = canvas.getContext('2d');
-    
-    const imageData = context.createImageData(size, size);
-    const data = imageData.data;
-
-    for (let i = 0; i < data.length; i += 4) {
-        const value = Math.floor(Math.random() * 255);
-        data[i] = value;
-        data[i + 1] = value;
-        data[i + 2] = value;
-        data[i + 3] = 255;
-    }
-
-    context.putImageData(imageData, 0, 0);
-
-    return new THREE.CanvasTexture(canvas);
-};
-
-planetMaterial.map = generateTexture();
-planetMaterial.needsUpdate = true;
+let planetMaterial = new THREE.MeshPhongMaterial({ map: planetTexture });
 const planet = new THREE.Mesh(planetGeometry, planetMaterial);
 scene.add(planet);
 
-// Generate background texture
-const generateBackgroundTexture = () => {
-    const size = 512;
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const context = canvas.getContext('2d');
-    
-    const imageData = context.createImageData(size, size);
-    const data = imageData.data;
-
-    for (let i = 0; i < data.length; i += 4) {
-        const value = Math.floor(Math.random() * 255);
-        data[i] = value / 2;
-        data[i + 1] = value / 2;
-        data[i + 2] = value;
-        data[i + 3] = 255;
-    }
-
-    context.putImageData(imageData, 0, 0);
-
-    return new THREE.CanvasTexture(canvas);
-};
-
-scene.background = generateBackgroundTexture();
+// Set background texture
+scene.background = backgroundTexture;
 
 camera.position.z = 15;
 
@@ -73,22 +35,22 @@ scene.add(light);
 // Player class
 class Player {
     constructor() {
-        this.energy = parseInt(localStorage.getItem('energy')) || 0;
-        this.colony = parseInt(localStorage.getItem('colony')) || 0;
-        this.communication = parseInt(localStorage.getItem('communication')) || 0;
-        this.water = parseInt(localStorage.getItem('water')) || 0;
-        this.food = parseInt(localStorage.getItem('food')) || 0;
-        this.coins = parseFloat(localStorage.getItem('coins')) || 0;
-        this.level = parseInt(localStorage.getItem('level')) || 1;
+        this.energy = parseInt(tg.initDataUnsafe.user.custom_data?.energy) || 0;
+        this.colony = parseInt(tg.initDataUnsafe.user.custom_data?.colony) || 0;
+        this.communication = parseInt(tg.initDataUnsafe.user.custom_data?.communication) || 0;
+        this.water = parseInt(tg.initDataUnsafe.user.custom_data?.water) || 0;
+        this.food = parseInt(tg.initDataUnsafe.user.custom_data?.food) || 0;
+        this.coins = parseFloat(tg.initDataUnsafe.user.custom_data?.coins) || 0;
+        this.level = parseInt(tg.initDataUnsafe.user.custom_data?.level) || 1;
         this.earnRate = 0.1;
         this.upgradeCosts = {
-            energy: parseFloat(localStorage.getItem('upgradeCostEnergy')) || 0.4,
-            colony: parseFloat(localStorage.getItem('upgradeCostColony')) || 0.4,
-            communication: parseFloat(localStorage.getItem('upgradeCostCommunication')) || 0.4,
-            water: parseFloat(localStorage.getItem('upgradeCostWater')) || 0.4,
-            food: parseFloat(localStorage.getItem('upgradeCostFood')) || 0.4
+            energy: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostEnergy) || 0.4,
+            colony: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostColony) || 0.4,
+            communication: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostCommunication) || 0.4,
+            water: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostWater) || 0.4,
+            food: parseFloat(tg.initDataUnsafe.user.custom_data?.upgradeCostFood) || 0.4
         };
-        this.lastLoginTime = parseInt(localStorage.getItem('lastLoginTime')) || Date.now();
+        this.lastLoginTime = parseInt(tg.initDataUnsafe.user.custom_data?.lastLoginTime) || Date.now();
 
         // Calculate offline earnings
         this.calculateOfflineEarnings();
@@ -96,7 +58,7 @@ class Player {
         // Start earning coins
         setInterval(() => {
             this.earnCoins();
-        }, 1000); // 5 minutes in milliseconds
+        }, 300000); // 5 minutes in milliseconds
 
         this.updateUI();
     }
@@ -107,13 +69,13 @@ class Player {
         const offlineEarnings = timeElapsed * this.earnRate;
         this.coins += offlineEarnings;
         this.lastLoginTime = now;
-        localStorage.setItem('lastLoginTime', now);
+        tg.MainButton.setText('Last login time: ' + now);
         this.updateUI();
     }
 
     earnCoins() {
         this.coins += this.earnRate;
-        localStorage.setItem('coins', this.coins);
+        tg.MainButton.setText('Coins: ' + this.coins);
         this.updateUI();
     }
 
@@ -123,9 +85,7 @@ class Player {
             this[parameter]++;
             this.coins -= cost;
             this.upgradeCosts[parameter] *= 2;
-            localStorage.setItem('coins', this.coins);
-            localStorage.setItem(parameter, this[parameter]);
-            localStorage.setItem('upgradeCost' + parameter.charAt(0).toUpperCase() + parameter.slice(1), this.upgradeCosts[parameter]);
+            tg.MainButton.setText('Coins: ' + this.coins);
             this.updateUI();
             this.levelUp();
         }
@@ -134,12 +94,11 @@ class Player {
     levelUp() {
         this.level++;
         this.earnRate += 0.1;
-        localStorage.setItem('level', this.level);
         this.changePlanetTexture();
     }
 
     changePlanetTexture() {
-        planetMaterial.map = generateTexture();
+        planetMaterial.map = loader.load('texture%20(3).jpg'); // Reload the planet texture
         planetMaterial.needsUpdate = true;
     }
 
