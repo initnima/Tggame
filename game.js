@@ -119,7 +119,7 @@ class Player {
         document.getElementById('coins').innerText = this.coins.toFixed(1);
         document.getElementById('level').innerText = this.level;
         document.getElementById('earnRate').innerText = this.earnRate.toFixed(1);
-        updateUpgradeCostText();
+        this.updateUpgradeCostText();
     }
 
     startMining() {
@@ -140,14 +140,14 @@ class Player {
         }
         this.updateUI();
     }
+
+    updateUpgradeCostText() {
+        const parameter = document.getElementById('upgradeSelect').value;
+        document.getElementById('upgradeCost').innerText = this.upgradeCosts[parameter].toFixed(1);
+    }
 }
 
 const player = new Player();
-
-function updateUpgradeCostText() {
-    const parameter = document.getElementById('upgradeSelect').value;
-    document.getElementById('upgradeCost').innerText = player.upgradeCosts[parameter].toFixed(1);
-}
 
 // Animation loop
 function animate() {
@@ -171,3 +171,8 @@ window.upgrade = function() {
     const parameter = document.getElementById('upgradeSelect').value;
     player.upgrade(parameter);
 };
+
+// Update upgrade cost text on parameter selection change
+document.getElementById('upgradeSelect').addEventListener('change', () => {
+    player.updateUpgradeCostText();
+});
