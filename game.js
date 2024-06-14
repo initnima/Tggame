@@ -13,8 +13,8 @@ document.body.appendChild(renderer.domElement);
 
 // Load textures
 const loader = new THREE.TextureLoader();
-const planetTexture = loader.load('planet.jpg');
-const backgroundTexture = loader.load('background.jpg');
+const planetTexture = loader.load('https://initnima.github.io/Tggame/texture%20(3).jpg');
+const backgroundTexture = loader.load('https://initnima.github.io/Tggame/bg-02-01.jpg');
 
 // Create a 3D planet with the image-based texture
 const planetGeometry = new THREE.SphereGeometry(5, 32, 32);
@@ -106,7 +106,7 @@ class Player {
     }
 
     changePlanetTexture() {
-        planetMaterial.map = loader.load('planet.jpg'); // Reload the planet texture
+        planetMaterial.map = loader.load('https://initnima.github.io/Tggame/texture%20(3).jpg'); // Reload the planet texture
         planetMaterial.needsUpdate = true;
     }
 
