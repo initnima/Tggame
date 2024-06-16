@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Telegram Web Apps SDK
-    Telegram.WebApp.ready();
+    // Ensure Telegram Web Apps SDK is ready
+    if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+    }
 
     const tg = window.Telegram.WebApp;
 
@@ -130,10 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         startMining() {
             this.isMining = true;
-            this.miningEndTime = Date.now() + 2 * 60 * 60 * 1000; // 2 hours in ms
+            this.miningEndTime = Date.now() + 2 * 60 * 60 * 1000; // 2 hours in milliseconds
             localStorage.setItem('isMining', JSON.stringify(this.isMining));
             localStorage.setItem('miningEndTime', this.miningEndTime);
-            this.checkMiningStatus();
             this.showMiningAnimation();
         }
 
